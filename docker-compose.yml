@@ -1,7 +1,6 @@
 services:
   mysql:
     image: mysql:8.4
-    container_name: contacts-mysql
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
       MYSQL_DATABASE: ${DB_NAME}
