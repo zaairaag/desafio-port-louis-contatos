@@ -1,0 +1,16 @@
+dist
+coverage
+node_modules
+package-lock.json
+.env
+.env.test
+.prettierignore
+.prettierrc
+.editorconfig
+.gitattributes
+.nvmrc
+.prettierignore
+docs/AGENT.md
+docs/PRD.md
+docs/RULES.md
+.pi
