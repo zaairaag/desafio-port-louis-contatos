@@ -278,7 +278,7 @@ Both collections cover the same cases, in this order:
 3. Zip: generate with `git archive -o contacts-api.zip HEAD` (only versioned files; no `node_modules`, `dist`, `coverage`, `.env`).
 4. Private repository: add the evaluator as collaborator.
 5. Tag the delivered version: `git tag v1.0.0 && git push --tags`.
-6. Run the fresh-clone verification (AGENT delivery checklist) before sending.
+6. Run the fresh-clone verification described in the README before sending.
 7. Reply in the original assessment email thread, mentioning the repository link, the stack summary, the design decisions section and the `/docs` URL.
 8. Deliver with margin before the deadline. After delivery, do not push to `main`; report any bug found by email instead.
 
