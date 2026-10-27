@@ -20,9 +20,12 @@ npm run dev
 
 On Windows PowerShell, replace the first command with `Copy-Item .env.example .env`.
 
-Before migrating, confirm the database is healthy with `docker compose ps`. Docker creates
-`contacts` and `contacts_test` on the first start. Opening the volume reset command is only needed
-when you want to wipe the data.
+Before migrating, confirm the database is healthy with `docker compose ps`. On the very first
+start, MySQL creates `contacts` and `contacts_test` and then restarts itself once, so the container
+can report healthy for a few seconds before the application user is ready. `npm ci` normally covers
+that window. If `npm run db:migrate` reports `Connection lost`, wait a few seconds and run it again.
+Docker creates both databases on the first start; the volume reset command is only needed when you
+want to wipe the data.
 
 Open `http://localhost:3000/docs` and use **Try it out** to execute every route.
 
@@ -213,3 +216,5 @@ HTTP/1.1 204 No Content
   trailing slash. `/docs` redirects there.
 - **Integration tests cannot connect:** confirm MySQL is healthy, `contacts_test` exists, and
   `DB_PORT` matches between `.env` and `.env.test`.
+- **`Connection lost` on the first migration:** MySQL is still finishing its first-start
+  initialization. Wait a few seconds and run `npm run db:migrate` again.
