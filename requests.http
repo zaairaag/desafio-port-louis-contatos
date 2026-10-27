@@ -1,0 +1,104 @@
+@baseUrl = http://localhost:3000
+
+### 1. Create contact
+# @name createContact
+POST {{baseUrl}}/contatos
+Content-Type: application/json
+
+{
+  "nome": "João Silva",
+  "telefone": "(11) 98765-4321"
+}
+
+### 2. Reject a single-word name
+POST {{baseUrl}}/contatos
+Content-Type: application/json
+
+{
+  "nome": "João",
+  "telefone": "(11) 98765-4321"
+}
+
+### 3. Reject a short middle word
+POST {{baseUrl}}/contatos
+Content-Type: application/json
+
+{
+  "nome": "Maria da Silva",
+  "telefone": "(11) 98765-4321"
+}
+
+### 4. Reject an invalid phone
+POST {{baseUrl}}/contatos
+Content-Type: application/json
+
+{
+  "nome": "João Silva",
+  "telefone": "12345"
+}
+
+### 5. Reject an unknown field
+POST {{baseUrl}}/contatos
+Content-Type: application/json
+
+{
+  "nome": "João Silva",
+  "telefone": "(11) 98765-4321",
+  "email": "joao@example.com"
+}
+
+### 6. Reject malformed JSON
+POST {{baseUrl}}/contatos
+Content-Type: application/json
+
+{"nome":
+
+### 7. List all contacts
+GET {{baseUrl}}/contatos
+
+### 8. Update only the name
+PATCH {{baseUrl}}/contatos/{{createContact.response.body.$.id}}
+Content-Type: application/json
+
+{
+  "nome": "Ana Paula Souza"
+}
+
+### 9. Update only the phone
+PATCH {{baseUrl}}/contatos/{{createContact.response.body.$.id}}
+Content-Type: application/json
+
+{
+  "telefone": "11 3456-7890"
+}
+
+### 10. Reject an empty update
+PATCH {{baseUrl}}/contatos/{{createContact.response.body.$.id}}
+Content-Type: application/json
+
+{}
+
+### 11. Reject an invalid id
+PATCH {{baseUrl}}/contatos/abc
+Content-Type: application/json
+
+{
+  "nome": "João Silva"
+}
+
+### 12. Update a non-existent contact
+PATCH {{baseUrl}}/contatos/999999
+Content-Type: application/json
+
+{
+  "nome": "João Silva"
+}
+
+### 13. Delete the contact
+DELETE {{baseUrl}}/contatos/{{createContact.response.body.$.id}}
+
+### 14. Delete the same contact again
+DELETE {{baseUrl}}/contatos/{{createContact.response.body.$.id}}
+
+### 15. Reject an invalid delete id
+DELETE {{baseUrl}}/contatos/0
