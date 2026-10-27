@@ -177,6 +177,15 @@ curl -i -X DELETE http://localhost:3000/contatos/1
 HTTP/1.1 204 No Content
 ```
 
+### End-to-end smoke test
+
+```bash
+bash scripts/test-api.sh http://localhost:3000
+```
+
+Runs 30 requests covering every status code and prints PASS/FAIL. Use Git Bash or WSL on Windows
+(UTF-8 required).
+
 ## 8. Design decisions
 
 | Spec issue                                 | Decision                                                                      | Rationale                                                                                            |
