@@ -233,6 +233,9 @@ docker compose -f docker-compose.prod.yml run --rm api node dist/database/migrat
 same `.env` used by the API container. Keep that file mode `600`; it is never committed. The API is
 served at `http://127.0.0.1:3100` and the tunnel hostname points to that address.
 
+The reference deployment is available at `https://contatos.zairagoncalves.com`. The API is
+unauthenticated by design and is intended for demonstration, not for storing sensitive data.
+
 Update the image after a new commit with:
 
 ```sh
