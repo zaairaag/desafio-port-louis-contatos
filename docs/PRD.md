@@ -151,6 +151,7 @@ Every error response uses one shape:
 
 - `details` appears only on `VALIDATION_ERROR`.
 - `details[].field` uses the public names (`nome`, `telefone`, `id`).
+- Body-level issues use `field: "body"`; an unknown key is reported by its own name.
 - All messages are in English.
 
 ## 9. Design Decisions (must be copied to README)

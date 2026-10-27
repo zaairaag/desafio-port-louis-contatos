@@ -65,20 +65,26 @@ describe('POST /contatos', () => {
     expect(list.body).toEqual([]);
   });
 
-  it('rejects unknown fields with 400', async () => {
+  it('reports the unknown field by name', async () => {
     const response = await request(app)
       .post('/contatos')
       .send({ ...VALID_CONTACT, email: 'joao@example.com' });
+    const body = response.body as ErrorBody;
 
     expect(response.status).toBe(400);
-    expect((response.body as ErrorBody).error.code).toBe('VALIDATION_ERROR');
+    expect(body.error.code).toBe('VALIDATION_ERROR');
+    expect(body.error.details).toEqual([{ field: 'email', message: 'Field is not allowed' }]);
   });
 
-  it('returns 400 when the body is missing', async () => {
+  it('reports a missing body against the body field', async () => {
     const response = await request(app).post('/contatos');
+    const body = response.body as ErrorBody;
 
     expect(response.status).toBe(400);
-    expect((response.body as ErrorBody).error.code).toBe('VALIDATION_ERROR');
+    expect(body.error.code).toBe('VALIDATION_ERROR');
+    expect(body.error.details).toEqual([
+      { field: 'body', message: 'Request body is required and must be a JSON object' },
+    ]);
   });
 
   it('returns 400 when the content type is not JSON', async () => {

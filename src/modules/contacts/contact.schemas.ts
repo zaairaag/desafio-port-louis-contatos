@@ -8,6 +8,8 @@ export const PHONE_ALLOWED_CHARACTERS = /^[\d\s()-]+$/;
 export const PHONE_PATTERN = /^[1-9]\d{9,10}$/;
 export const ID_MAX_VALUE = 4294967295;
 export const ID_PATTERN = /^[1-9]\d*$/;
+export const BODY_REQUIRED_MESSAGE = 'Request body is required and must be a JSON object';
+export const UPDATE_REQUIRES_FIELD_MESSAGE = 'At least one of nome or telefone is required';
 
 const normalizeName = (value: string): string => value.normalize('NFC').trim().replace(/\s+/g, ' ');
 
@@ -23,7 +25,7 @@ export const nameSchema = z
   )
   .refine(
     (value) => NAME_PATTERN.test(value),
-    `Name must have at least ${String(NAME_MIN_WORDS)} words with ${String(NAME_MIN_WORD_LENGTH)} letters each`,
+    `Name must have at least ${String(NAME_MIN_WORDS)} words, letters only, with ${String(NAME_MIN_WORD_LENGTH)} letters each`,
   );
 
 export const phoneSchema = z
@@ -41,20 +43,20 @@ export const contactIdSchema = z
   .transform(Number)
   .refine((value) => Number.isInteger(value) && value <= ID_MAX_VALUE, 'Id is out of range');
 
-export const createContactSchema = z.strictObject({
-  nome: nameSchema,
-  telefone: phoneSchema,
-});
+export const createContactSchema = z.strictObject(
+  { nome: nameSchema, telefone: phoneSchema },
+  { error: BODY_REQUIRED_MESSAGE },
+);
 
 export const updateContactSchema = z
-  .strictObject({
-    nome: nameSchema.optional(),
-    telefone: phoneSchema.optional(),
-  })
-  .refine(
-    (value) => value.nome !== undefined || value.telefone !== undefined,
-    'At least one of nome or telefone is required',
-  );
+  .strictObject(
+    { nome: nameSchema.optional(), telefone: phoneSchema.optional() },
+    { error: BODY_REQUIRED_MESSAGE },
+  )
+  .refine((value) => value.nome !== undefined || value.telefone !== undefined, {
+    message: UPDATE_REQUIRES_FIELD_MESSAGE,
+    when: (payload) => payload.issues.length === 0,
+  });
 
 export type CreateContactDto = z.output<typeof createContactSchema>;
 export type UpdateContactDto = z.output<typeof updateContactSchema>;

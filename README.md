@@ -138,7 +138,7 @@ curl -X POST http://localhost:3000/contatos \
     "details": [
       {
         "field": "nome",
-        "message": "Name must have at least 2 words with 3 letters each"
+        "message": "Name must have at least 2 words, letters only, with 3 letters each"
       }
     ]
   }

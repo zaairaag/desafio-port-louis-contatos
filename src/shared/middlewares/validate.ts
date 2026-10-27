@@ -4,11 +4,19 @@ import { ValidationError } from '../errors/validation-error.js';
 import type { ValidationDetail } from '../errors/validation-error.js';
 import type { ContactRouteLocals } from '../../modules/contacts/contact.types.js';
 
+const BODY_FIELD = 'body';
+const UNKNOWN_FIELD_MESSAGE = 'Field is not allowed';
+
 function toValidationDetails(error: ZodError, rootField?: string): ValidationDetail[] {
-  return error.issues.map((issue) => ({
-    field: rootField ?? issue.path.map(String).join('.'),
-    message: issue.message,
-  }));
+  return error.issues.flatMap((issue) => {
+    if (issue.code === 'unrecognized_keys') {
+      return issue.keys.map((key) => ({ field: key, message: UNKNOWN_FIELD_MESSAGE }));
+    }
+
+    const path = issue.path.map(String).join('.');
+
+    return [{ field: rootField ?? (path === '' ? BODY_FIELD : path), message: issue.message }];
+  });
 }
 
 export function validateBody<Output, Input>(schema: ZodType<Output, Input>): RequestHandler {

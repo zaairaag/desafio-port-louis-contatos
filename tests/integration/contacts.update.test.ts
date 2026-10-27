@@ -86,13 +86,43 @@ describe('PATCH /contatos/:id', () => {
     },
   );
 
+  it('reports an empty update against the body field', async () => {
+    const contact = await createContact();
+
+    const response = await request(app)
+      .patch(`/contatos/${String(contact.id)}`)
+      .send({});
+    const body = response.body as ErrorBody;
+
+    expect(response.status).toBe(400);
+    expect(body.error.details).toEqual([
+      { field: 'body', message: 'At least one of nome or telefone is required' },
+    ]);
+  });
+
+  it('reports only the unknown field when the body has no allowed keys', async () => {
+    const contact = await createContact();
+
+    const response = await request(app)
+      .patch(`/contatos/${String(contact.id)}`)
+      .send({ email: 'joao@example.com' });
+    const body = response.body as ErrorBody;
+
+    expect(response.status).toBe(400);
+    expect(body.error.details).toEqual([{ field: 'email', message: 'Field is not allowed' }]);
+  });
+
   it('returns 400 when the body is missing', async () => {
     const contact = await createContact();
 
     const response = await request(app).patch(`/contatos/${String(contact.id)}`);
+    const body = response.body as ErrorBody;
 
     expect(response.status).toBe(400);
-    expect((response.body as ErrorBody).error.code).toBe('VALIDATION_ERROR');
+    expect(body.error.code).toBe('VALIDATION_ERROR');
+    expect(body.error.details).toEqual([
+      { field: 'body', message: 'Request body is required and must be a JSON object' },
+    ]);
   });
 
   it.each(['abc', '0', '4294967296'])(

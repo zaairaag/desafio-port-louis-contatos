@@ -110,7 +110,10 @@ components:
               items:
                 type: object
                 properties:
-                  field: { type: string, example: nome }
+                  field:
+                    type: string
+                    description: Public field name, the offending key, or "body" for body-level issues
+                    example: nome
                   message: { type: string }
   responses:
     BadRequest:
