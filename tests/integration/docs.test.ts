@@ -38,6 +38,13 @@ describe('GET /docs', () => {
     expect(response.headers['cache-control']).toContain('no-store');
     expect(response.text).not.toContain('http://localhost:3000');
   });
+
+  it('redirects the root path to the docs', async () => {
+    const response = await request(app).get('/');
+
+    expect(response.status).toBe(302);
+    expect(response.headers.location).toBe('/docs/');
+  });
 });
 
 describe('API security headers', () => {

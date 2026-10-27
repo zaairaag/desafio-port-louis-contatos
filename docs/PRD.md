@@ -91,6 +91,7 @@ Contact representation:
 ### 6.5 GET /docs
 - Serves Swagger UI built from `docs/openapi.yaml`.
 - `/docs` redirects to `/docs/`, which returns 200 with HTML.
+- `GET /` redirects to `/docs/` (302).
 - Not part of the assessment contract; tooling for evaluators.
 
 ### 6.6 Fallbacks
