@@ -218,3 +218,23 @@ HTTP/1.1 204 No Content
   `DB_PORT` matches between `.env` and `.env.test`.
 - **`Connection lost` on the first migration:** MySQL is still finishing its first-start
   initialization. Wait a few seconds and run `npm run db:migrate` again.
+
+## 11. Production deployment (optional)
+
+The production stack runs MySQL and the API in Docker, publishing the API only on loopback. A
+Cloudflare Tunnel exposes it publicly, so no inbound port or shared reverse proxy is required.
+
+```sh
+docker compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.prod.yml run --rm api node dist/database/migrate.js
+```
+
+`docker-compose.prod.yml` reads `DB_ROOT_PASSWORD`, `DB_NAME`, `DB_USER` and `DB_PASSWORD` from the
+same `.env` used by the API container. Keep that file mode `600`; it is never committed. The API is
+served at `http://127.0.0.1:3100` and the tunnel hostname points to that address.
+
+Update the image after a new commit with:
+
+```sh
+docker compose -f docker-compose.prod.yml up -d --build
+```

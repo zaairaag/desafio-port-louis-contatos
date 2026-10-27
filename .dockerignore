@@ -1,0 +1,14 @@
+node_modules
+dist
+coverage
+.git
+.github
+.husky
+.env
+.env.test
+.pi
+docs/superpowers
+docs/AGENT.md
+docs/PRD.md
+docs/RULES.md
+tests
