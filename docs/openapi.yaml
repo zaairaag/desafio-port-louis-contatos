@@ -79,6 +79,7 @@ components:
       example: (11) 98765-4321
     Contact:
       type: object
+      required: [id, nome, telefone]
       properties:
         id: { type: integer, example: 1 }
         nome: { type: string, example: João Silva }
@@ -99,22 +100,25 @@ components:
         telefone: { $ref: '#/components/schemas/ContactPhone' }
     Error:
       type: object
+      required: [error]
       properties:
         error:
           type: object
+          required: [code, message]
           properties:
             code: { type: string, example: VALIDATION_ERROR }
             message: { type: string, example: Invalid request data }
             details:
               type: array
+              description: Present only on VALIDATION_ERROR. Body-level errors use field "body"; unknown fields use the field name.
               items:
                 type: object
+                required: [field, message]
                 properties:
-                  field:
+                  field: { type: string, example: nome }
+                  message:
                     type: string
-                    description: Public field name, the offending key, or "body" for body-level issues
-                    example: nome
-                  message: { type: string }
+                    example: Name must have at least 2 words, letters only, with 3 letters each
   responses:
     BadRequest:
       description: Validation error or malformed JSON

@@ -136,7 +136,7 @@ Every error response uses one shape:
   "error": {
     "code": "VALIDATION_ERROR",
     "message": "Invalid request data",
-    "details": [{ "field": "nome", "message": "Name must have at least two words with three letters each" }]
+    "details": [{ "field": "nome", "message": "Name must have at least 2 words, letters only, with 3 letters each" }]
   }
 }
 ```
@@ -151,8 +151,7 @@ Every error response uses one shape:
 | `INTERNAL_ERROR` | 500 | Any unhandled error |
 
 - `details` appears only on `VALIDATION_ERROR`.
-- `details[].field` uses the public names (`nome`, `telefone`, `id`).
-- Body-level issues use `field: "body"`; an unknown key is reported by its own name.
+- `details[].field` uses public names (`nome`, `telefone`, `id`), the unknown field name for rejected keys, or `body` for body-level errors (missing body, empty PATCH).
 - All messages are in English.
 
 ## 9. Design Decisions (must be copied to README)
