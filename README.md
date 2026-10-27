@@ -13,7 +13,7 @@ e MySQL.
 
 ```sh
 cp .env.example .env
-docker compose up -d
+docker compose up -d --wait
 npm ci
 npm run db:migrate
 npm run dev
@@ -21,13 +21,9 @@ npm run dev
 
 No Windows PowerShell, substitua o primeiro comando por `Copy-Item .env.example .env`.
 
-Antes de migrar, confirme que o banco está saudável com `docker compose ps`. Na primeira
-inicialização, o MySQL cria `contacts` e `contacts_test` e depois reinicia uma vez, então o
-container pode aparecer como saudável por alguns segundos antes de o usuário da aplicação estar
-pronto. O `npm ci` normalmente cobre essa janela. Se `npm run db:migrate` retornar
-`Connection lost`, aguarde alguns segundos e execute novamente. O Docker cria os dois bancos na
-primeira inicialização; o comando de reset do volume só é necessário quando você quer apagar os
-dados.
+`--wait` bloqueia até o MySQL ficar saudável, então a migração pode rodar logo depois. O Docker cria
+os dois bancos na primeira inicialização; o comando de reset do volume só é necessário quando você
+quer apagar os dados.
 
 Abra `http://localhost:3000/docs` e use **Try it out** para executar cada rota.
 
@@ -208,23 +204,23 @@ no Windows (UTF-8 é obrigatório).
 
 ## 9. Scripts disponíveis
 
-| Comando                    | Finalidade                                           |
-| -------------------------- | ---------------------------------------------------- |
-| `npm run dev`              | Inicia o servidor de desenvolvimento com `tsx watch` |
-| `npm run build`            | Compila TypeScript para `dist`                       |
-| `npm start`                | Executa o servidor compilado                         |
-| `npm run lint`             | Executa o ESLint com zero avisos                     |
-| `npm run lint:fix`         | Corrige problemas de lint                            |
-| `npm run format`           | Formata com Prettier                                 |
-| `npm run format:check`     | Verifica a formatação                                |
-| `npm run typecheck`        | Checa tipos de `src` e `tests`                       |
-| `npm test`                 | Executa testes unitários e de integração             |
-| `npm run test:unit`        | Executa testes unitários sem MySQL                   |
-| `npm run test:integration` | Executa testes de integração contra o MySQL          |
-| `npm run test:coverage`    | Gera relatório de cobertura                          |
-| `npm run db:migrate`       | Aplica migrações pendentes                           |
-| `docker compose up -d`     | Inicia o MySQL                                       |
-| `docker compose down -v`   | Para o MySQL e apaga os dados                        |
+| Comando                       | Finalidade                                           |
+| ----------------------------- | ---------------------------------------------------- |
+| `npm run dev`                 | Inicia o servidor de desenvolvimento com `tsx watch` |
+| `npm run build`               | Compila TypeScript para `dist`                       |
+| `npm start`                   | Executa o servidor compilado                         |
+| `npm run lint`                | Executa o ESLint com zero avisos                     |
+| `npm run lint:fix`            | Corrige problemas de lint                            |
+| `npm run format`              | Formata com Prettier                                 |
+| `npm run format:check`        | Verifica a formatação                                |
+| `npm run typecheck`           | Checa tipos de `src` e `tests`                       |
+| `npm test`                    | Executa testes unitários e de integração             |
+| `npm run test:unit`           | Executa testes unitários sem MySQL                   |
+| `npm run test:integration`    | Executa testes de integração contra o MySQL          |
+| `npm run test:coverage`       | Gera relatório de cobertura                          |
+| `npm run db:migrate`          | Aplica migrações pendentes                           |
+| `docker compose up -d --wait` | Inicia o MySQL e espera ficar saudável               |
+| `docker compose down -v`      | Para o MySQL e apaga os dados                        |
 
 ## 10. Solução de problemas
 
@@ -237,8 +233,6 @@ no Windows (UTF-8 é obrigatório).
 - **Testes de integração não conectam:** confirme que o MySQL está saudável, que `contacts_test`
   existe e que o `DB_PORT` do `.env` corresponde à porta publicada pelo Docker. Sem `.env`,
   verifique `.env.test`.
-- **`Connection lost` na primeira migração:** o MySQL ainda está finalizando a inicialização do
-  primeiro start. Aguarde alguns segundos e execute `npm run db:migrate` novamente.
 
 ## 11. Deploy em produção (opcional)
 
