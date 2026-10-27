@@ -1,0 +1,131 @@
+openapi: 3.0.3
+info:
+  title: Contacts API
+  version: 1.0.0
+  description: REST API to manage contacts with name and phone.
+servers:
+  - url: http://localhost:3000
+tags:
+  - name: Contacts
+paths:
+  /contatos:
+    get:
+      tags: [Contacts]
+      summary: List all contacts
+      responses:
+        '200':
+          description: Contact list ordered by id
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Contact' }
+    post:
+      tags: [Contacts]
+      summary: Create a contact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateContact' }
+      responses:
+        '201':
+          description: Contact created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Contact' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '413': { $ref: '#/components/responses/PayloadTooLarge' }
+  /contatos/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: integer, minimum: 1, maximum: 4294967295 }
+    patch:
+      tags: [Contacts]
+      summary: Partially update a contact
+      description: Send nome, telefone or both. Same validation rules as creation.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UpdateContact' }
+      responses:
+        '200':
+          description: Contact updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Contact' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [Contacts]
+      summary: Delete a contact
+      responses:
+        '204':
+          description: Contact deleted, empty body
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+components:
+  schemas:
+    ContactName:
+      type: string
+      maxLength: 100
+      description: At least two words, letters only (accents allowed), each word with three or more letters.
+      example: João Silva
+    ContactPhone:
+      type: string
+      description: 10 or 11 digits with area code; spaces, parentheses and hyphens allowed. Returned as digits only.
+      example: (11) 98765-4321
+    Contact:
+      type: object
+      properties:
+        id: { type: integer, example: 1 }
+        nome: { type: string, example: João Silva }
+        telefone: { type: string, example: '11987654321' }
+    CreateContact:
+      type: object
+      additionalProperties: false
+      required: [nome, telefone]
+      properties:
+        nome: { $ref: '#/components/schemas/ContactName' }
+        telefone: { $ref: '#/components/schemas/ContactPhone' }
+    UpdateContact:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        nome: { $ref: '#/components/schemas/ContactName' }
+        telefone: { $ref: '#/components/schemas/ContactPhone' }
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code: { type: string, example: VALIDATION_ERROR }
+            message: { type: string, example: Invalid request data }
+            details:
+              type: array
+              items:
+                type: object
+                properties:
+                  field: { type: string, example: nome }
+                  message: { type: string }
+  responses:
+    BadRequest:
+      description: Validation error or malformed JSON
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: Contact not found
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    PayloadTooLarge:
+      description: Body exceeds 10kb
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
