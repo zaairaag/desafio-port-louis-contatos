@@ -9,6 +9,13 @@ const OPENAPI_FILE_PATH = fileURLToPath(new URL('../../../docs/openapi.yaml', im
 export function createApiDocsRouter(): Router {
   const document = parse(readFileSync(OPENAPI_FILE_PATH, 'utf8')) as swaggerUi.JsonObject;
   const router = Router();
+
+  router.use((request, response, next) => {
+    if (request.path === '/swagger-ui-init.js') {
+      response.setHeader('Cache-Control', 'no-store');
+    }
+    next();
+  });
   router.use('/', swaggerUi.serve, swaggerUi.setup(document));
   return router;
 }

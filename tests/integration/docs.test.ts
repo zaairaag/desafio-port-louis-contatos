@@ -30,6 +30,14 @@ describe('GET /docs', () => {
     expect(stylesheet.status).toBe(200);
     expect(bundle.status).toBe(200);
   });
+
+  it('serves a same-origin Swagger configuration that is never cached', async () => {
+    const response = await request(app).get('/docs/swagger-ui-init.js');
+
+    expect(response.status).toBe(200);
+    expect(response.headers['cache-control']).toContain('no-store');
+    expect(response.text).not.toContain('http://localhost:3000');
+  });
 });
 
 describe('API security headers', () => {

@@ -3,8 +3,6 @@ info:
   title: Contacts API
   version: 1.0.0
   description: REST API to manage contacts with name and phone.
-servers:
-  - url: http://localhost:3000
 tags:
   - name: Contacts
 paths:
