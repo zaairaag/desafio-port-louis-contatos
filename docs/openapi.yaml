@@ -57,6 +57,7 @@ paths:
               schema: { $ref: '#/components/schemas/Contact' }
         '400': { $ref: '#/components/responses/BadRequest' }
         '404': { $ref: '#/components/responses/NotFound' }
+        '413': { $ref: '#/components/responses/PayloadTooLarge' }
     delete:
       tags: [Contacts]
       summary: Delete a contact

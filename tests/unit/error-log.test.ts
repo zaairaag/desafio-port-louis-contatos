@@ -2,19 +2,15 @@ import { describe, expect, it } from 'vitest';
 import { toLoggedError } from '../../src/shared/errors/error-log.js';
 
 describe('toLoggedError', () => {
-  it('keeps only the error name, message and stack', () => {
-    const error = Object.assign(new Error('Insert failed'), {
-      sql: 'INSERT INTO contacts (name, phone) VALUES (?, ?)',
-      values: ['João Silva', '11987654321'],
-    });
+  it.each(['message', 'stack', 'name'] as const)(
+    'does not expose personal data embedded in the error %s',
+    (field) => {
+      const privateData = 'João Silva 11987654321';
+      const error = Object.assign(new Error('Persistence failed'), { [field]: privateData });
 
-    const logged = toLoggedError(error);
-
-    expect(logged.name).toBe('Error');
-    expect(logged.message).toBe('Insert failed');
-    expect(logged.stack).toBeTypeOf('string');
-    expect(Object.keys(logged)).toEqual(['name', 'message', 'stack']);
-  });
+      expect(JSON.stringify(toLoggedError(error))).not.toContain(privateData);
+    },
+  );
 
   it('does not expose driver payloads from logged errors', () => {
     const error = Object.assign(new Error('Query failed'), {
@@ -26,10 +22,14 @@ describe('toLoggedError', () => {
     expect(JSON.stringify(toLoggedError(error))).not.toContain('11987654321');
   });
 
-  it('describes a thrown non-error value without inspecting it', () => {
-    expect(toLoggedError({ secret: '11987654321' })).toEqual({
-      name: 'UnknownError',
-      message: 'A non-error value was thrown',
-    });
+  it.each([
+    'João Silva 11987654321',
+    { name: 'João Silva', phone: '11987654321' },
+    ['João Silva', '11987654321'],
+  ])('does not expose a thrown non-error value %j', (value) => {
+    const serialized = JSON.stringify(toLoggedError(value));
+
+    expect(serialized).not.toContain('João Silva');
+    expect(serialized).not.toContain('11987654321');
   });
 });

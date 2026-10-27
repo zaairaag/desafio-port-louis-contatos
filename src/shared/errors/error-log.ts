@@ -1,15 +1,13 @@
 export type LoggedError = {
   name: string;
   message: string;
-  stack?: string;
 };
 
 export function toLoggedError(error: unknown): LoggedError {
   if (error instanceof Error) {
     return {
-      name: error.name,
-      message: error.message,
-      ...(error.stack === undefined ? {} : { stack: error.stack }),
+      name: 'Error',
+      message: 'Error details omitted to protect sensitive data',
     };
   }
   return { name: 'UnknownError', message: 'A non-error value was thrown' };

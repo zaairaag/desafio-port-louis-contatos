@@ -70,6 +70,10 @@ npm start
 `npm run dev` uses `tsx watch`. `npm run build` compiles `src` to `dist`. `npm start` runs the
 compiled server. `/docs` works in both modes.
 
+Error logs omit exception names, messages, stacks and driver payloads because they can contain
+contact data. The surrounding log message identifies the failed operation without exposing
+names, phone numbers or SQL.
+
 ## 6. Automated tests
 
 ```sh
@@ -82,6 +86,10 @@ npm run test:coverage
 Unit tests do not need MySQL. Integration tests need a running MySQL with `contacts_test` and apply
 migrations automatically. Integration files run sequentially and truncate the contacts table before
 each test. Run `docker compose up -d` first when using Docker.
+
+Tests reuse `DB_PORT` from the local `.env` when it exists, keeping the same published MySQL
+port as Docker. Without `.env`, they use `.env.test`, including port `3306` in CI. The database
+name and other test settings still come from `.env.test`.
 
 ## 7. Testing the API manually
 
@@ -208,14 +216,14 @@ HTTP/1.1 204 No Content
 
 ## 10. Troubleshooting
 
-- **Port 3306 is already in use:** change `DB_PORT` in `.env` **and** `.env.test` to the same free
-  port, then run `docker compose up -d`. The Compose file publishes `${DB_PORT}`.
+- **Port 3306 is already in use:** change `DB_PORT` in `.env` to a free port, then run
+  `docker compose up -d`. Tests automatically reuse that local port.
 - **Reset the database:** run `docker compose down -v` and then `docker compose up -d` followed by
   `npm run db:migrate`. This deletes all local data.
 - **Blank `/docs`:** confirm the server is running and open `http://localhost:3000/docs/` with the
   trailing slash. `/docs` redirects there.
 - **Integration tests cannot connect:** confirm MySQL is healthy, `contacts_test` exists, and
-  `DB_PORT` matches between `.env` and `.env.test`.
+  `DB_PORT` in `.env` matches the published Docker port. Without `.env`, check `.env.test`.
 - **`Connection lost` on the first migration:** MySQL is still finishing its first-start
   initialization. Wait a few seconds and run `npm run db:migrate` again.
 
